@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { extractTextFromBuffer, detectFileType } from '@/lib/extractText'
 
-export const config = { api: { bodyParser: false } }
 
 async function resolveOnboardingId(token: string): Promise<string | null> {
   try {

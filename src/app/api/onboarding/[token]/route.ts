@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 
-export async function GET(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params
+export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   try {
     const rows = await sql`SELECT * FROM onboardings WHERE token = ${token} LIMIT 1`
     if (!rows.length) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -14,8 +14,8 @@ export async function GET(req: NextRequest, { params }: { params: { token: strin
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   try {
     const body = await req.json()
     const { data, current_step } = body

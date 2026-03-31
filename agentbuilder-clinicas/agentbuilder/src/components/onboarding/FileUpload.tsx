@@ -5,6 +5,7 @@ import { Upload, File, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react
 
 interface UploadedFile {
   id: string
+  dbId?: string
   name: string
   description: string
   status: 'uploading' | 'success' | 'error'
@@ -65,7 +66,7 @@ export default function FileUpload({ token, section, onTextExtracted, multiple =
 
       setFiles(prev => prev.map(f =>
         f.id === uploadEntry.id
-          ? { ...f, status: 'success', extractedText: data.extracted_text }
+          ? { ...f, status: 'success', dbId: data.id, extractedText: data.extracted_text }
           : f
       ))
 
@@ -84,7 +85,15 @@ export default function FileUpload({ token, section, onTextExtracted, multiple =
     setDescription('')
   }
 
-  const removeFile = (id: string) => {
+  const removeFile = async (id: string) => {
+    const file = files.find(f => f.id === id)
+    if (file?.dbId) {
+      try {
+        await fetch(`/api/onboarding/${token}/upload?id=${file.dbId}`, { method: 'DELETE' })
+      } catch (err) {
+        console.error('Failed to delete upload from server:', err)
+      }
+    }
     setFiles(prev => prev.filter(f => f.id !== id))
   }
 

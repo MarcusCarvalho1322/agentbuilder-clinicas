@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Download, Copy, Check, FileText, Loader2 } from 'lucide-react'
+import { ArrowLeft, Download, Copy, Check, FileText, Loader2, Paperclip } from 'lucide-react'
 
 interface Document { id: string; doc_type: string; title: string; content: string; created_at: string }
+interface Upload { id: string; original_name: string; description: string; file_type: string; file_size: number | null; upload_section: string | null; created_at: string }
 interface OnboardingDetail {
   id: string; token: string; clinic_name: string | null; client_name: string | null
   client_email: string | null; status: string; data: Record<string, unknown>
@@ -20,6 +21,7 @@ export default function AdminDetail() {
   const [authed, setAuthed] = useState(false)
   const [onboarding, setOnboarding] = useState<OnboardingDetail | null>(null)
   const [docs, setDocs] = useState<Document[]>([])
+  const [uploads, setUploads] = useState<Upload[]>([])
   const [loading, setLoading] = useState(true)
   const [activeDoc, setActiveDoc] = useState<string | null>(null)
   const [copied, setCopied] = useState<string | null>(null)
@@ -40,6 +42,7 @@ export default function AdminDetail() {
       const data = await res.json()
       setOnboarding(data.onboarding)
       setDocs(data.documents)
+      setUploads(data.uploads ?? [])
       setAuthed(true)
       sessionStorage.setItem('admin_secret', s)
       if (data.documents.length) setActiveDoc(data.documents[0].id)
@@ -123,7 +126,34 @@ export default function AdminDetail() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        {/* Uploads section */}
+        {uploads.length > 0 && (
+          <div className="card">
+            <div className="flex items-center gap-2 mb-4">
+              <Paperclip className="w-4 h-4 text-brand-teal" />
+              <h2 className="font-bold text-brand-navy">Documentos enviados ({uploads.length})</h2>
+            </div>
+            <div className="divide-y divide-gray-100">
+              {uploads.map(u => (
+                <div key={u.id} className="py-3 flex items-start gap-3">
+                  <FileText className="w-4 h-4 text-brand-mid flex-shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-brand-dark truncate">{u.original_name}</p>
+                    <p className="text-xs text-brand-mid truncate">{u.description}</p>
+                    <div className="flex gap-3 mt-1 text-[10px] text-brand-mid">
+                      <span>{u.upload_section ?? 'geral'}</span>
+                      <span>{u.file_type}</span>
+                      {u.file_size != null && <span>{(u.file_size / 1024).toFixed(0)} KB</span>}
+                      <span>{new Date(u.created_at).toLocaleString('pt-BR')}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {docs.length === 0 ? (
           <div className="card text-center py-12">
             <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />

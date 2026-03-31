@@ -16,7 +16,13 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       WHERE onboarding_id = ${params.id}
       ORDER BY created_at ASC
     `
-    return NextResponse.json({ onboarding: rows[0], documents: docs })
+    const uploads = await sql`
+      SELECT id, original_name, description, file_type, file_size, upload_section, created_at
+      FROM uploads
+      WHERE onboarding_id = ${params.id}
+      ORDER BY created_at ASC
+    `
+    return NextResponse.json({ onboarding: rows[0], documents: docs, uploads })
   } catch (e) {
     console.error(e)
     return NextResponse.json({ error: 'Database error' }, { status: 500 })

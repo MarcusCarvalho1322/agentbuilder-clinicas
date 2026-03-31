@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { generateDocuments, type OnboardingData } from '@/lib/claude'
 
-export async function POST(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params
+export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
 
   try {
     // Load onboarding

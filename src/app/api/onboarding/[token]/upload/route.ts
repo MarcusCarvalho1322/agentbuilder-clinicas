@@ -12,8 +12,8 @@ async function resolveOnboardingId(token: string): Promise<string | null> {
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params
+export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   try {
     const onboardingId = await resolveOnboardingId(token)
     if (!onboardingId) return NextResponse.json({ error: 'Onboarding not found' }, { status: 404 })
@@ -31,8 +31,8 @@ export async function GET(req: NextRequest, { params }: { params: { token: strin
   }
 }
 
-export async function POST(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params
+export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
 
   try {
     const onboardingId = await resolveOnboardingId(token)
@@ -72,8 +72,8 @@ export async function POST(req: NextRequest, { params }: { params: { token: stri
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { token: string } }) {
-  const { token } = params
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params
   const { searchParams } = new URL(req.url)
   const uploadId = searchParams.get('id')
 

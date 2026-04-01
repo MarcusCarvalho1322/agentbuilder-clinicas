@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 import { NextRequest, NextResponse } from 'next/server'
 import { sql } from '@/lib/db'
 import { generateDocuments, type OnboardingData } from '@/lib/claude'

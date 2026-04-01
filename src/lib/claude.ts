@@ -227,12 +227,12 @@ RELATÓRIO DE QUALIDADE:
 
   const response = await client.messages.create({
     model: 'claude-sonnet-4-5',
-    max_tokens: 8000,
+    max_tokens: 16000,
     system: GENERATION_SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userPrompt }]
+    messages: [{ role: 'user', content: userPrompt }, { role: 'assistant' as const, content: '{' }]
   })
 
-  const text = response.content[0].type === 'text' ? response.content[0].text : ''
+  const text = '{' + (response.content[0].type === 'text' ? response.content[0].text : '')
 
   try {
     const parsed = JSON.parse(text)
